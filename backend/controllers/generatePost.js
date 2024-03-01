@@ -9,6 +9,7 @@ const {
 const { database } = require("../firebase");
 const fs = require("fs");
 const { twitterClient } = require("../twitterClient");
+const dotenv = require('dotenv');
 
 const getfirebaseDatabase = async () => {
     console.log("enter getfirebaseDatabase");
@@ -179,7 +180,30 @@ const deletePhoto = (filePath) => {
         }
     });
 };
+const syncTwiiterToken = async () => {
+    return new Promise((resolve, reject) => {
+        const envConfig = dotenv.parse(fs.readFileSync('.env'));
+        const ref = database.ref("/twitter/accountDeatail");
+        ref.once(
+            "value",
+            (snapshot) => {
+                envConfig['ACCESS_TOKEN'] = snapshot.val().accessToken;
+                envConfig['ACCESS_SECRET'] = snapshot.val().tokenSecret;
 
+                const updatedEnvConfig = Object.keys(envConfig)
+                    .map(key => `${key}=${JSON.stringify(envConfig[key])}`)
+                    .join('\n');
+
+                fs.writeFileSync('.env', updatedEnvConfig);
+                resolve(snapshot.val());
+            },
+            (error) => {
+                reject(error);
+            }
+        );
+    })
+
+}
 module.exports = {
     postImageInstagram,
     postCaptionsGenerate,
@@ -187,4 +211,5 @@ module.exports = {
     postImageFacebook,
     postImageGenerate,
     postImageTwitter,
+    syncTwiiterToken,
 };

@@ -44,8 +44,13 @@ const PostingSlice: any = createSlice({
     pageSave: (state, action) => {
       state.selectPage = action.payload;
     },
-    setSchedule: (state, action) => {
+    setPageDeatail: (state, action) => {
       set(ref(database, "facebook/pageDeatail"), {
+        ...action.payload,
+      });
+    },
+    setTwitterDeatail: (state, action) => {
+      set(ref(database, "twitter/accountDeatail"), {
         ...action.payload,
       });
     },
@@ -93,5 +98,6 @@ const PostingSlice: any = createSlice({
   },
 });
 
-export const { setUser, pageSave, setSchedule } = PostingSlice.actions;
+export const { setUser, pageSave, setPageDeatail, setTwitterDeatail } =
+  PostingSlice.actions;
 export default PostingSlice.reducer;
