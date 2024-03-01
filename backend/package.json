@@ -1,0 +1,28 @@
+{
+  "name": "social-media-manage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "bhavesh-rawal",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.2.1",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "firebase": "^10.8.0",
+    "firebase-admin": "^12.0.0",
+    "fs": "^0.0.1-security",
+    "node-cron": "^3.0.3",
+    "oauth-1.0a": "^2.2.6",
+    "replicate": "^0.27.1",
+    "request": "^2.88.2",
+    "twitter-api-v2": "^1.16.0"
+  }
+}
