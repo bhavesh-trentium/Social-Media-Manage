@@ -1,7 +1,6 @@
 import React from "react";
 import "./index.css";
 import { CloudUploadOutlined } from "@ant-design/icons";
-import { FacebookProvider, LoginButton } from "react-facebook";
 import { Input } from "antd";
 import { ButtonCreativeProps } from "./common.props";
 
@@ -29,22 +28,6 @@ export const UploadButton = (props: any) => {
           <CloudUploadOutlined />
         </span>
       </div>
-    </>
-  );
-};
-
-export const ButtonFacebookLogin = (props: any) => {
-  return (
-    <>
-      <FacebookProvider appId={"184681667978801"}>
-        <LoginButton
-          scope="email,business_management"
-          onSuccess={props.handleSuccess}
-          onError={(err) => console.log(err)}
-        >
-          Log in with Facebook
-        </LoginButton>
-      </FacebookProvider>
     </>
   );
 };

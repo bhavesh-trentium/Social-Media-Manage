@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { Card } from "antd";
-import { ButtonFacebookLogin } from "../common/Button";
 import { pageList } from "../../redux/actions/actions";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { pageSave } from "../../redux/slice/PostingSlice";
+import { pageSave, setTwitterDeatail } from "../../redux/slice/PostingSlice";
+import {
+  FacebookAuthProvider,
+  TwitterAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth } from "../../firebase/Firebase";
 
 const AccessToken = () => {
   const [page, setPage] = useState<any>([]);
@@ -15,10 +20,7 @@ const AccessToken = () => {
     const Pages = localStorage.getItem("pageList");
     setPage(Pages ? JSON.parse(Pages) : []);
   };
-  const handleSuccess = async (response: any) => {
-    await dispatch(pageList(response.authResponse));
-    await handlesPages();
-  };
+
   const onFinish = (e: any) => {
     const Pagenam = e.target.value.PageName;
     setPageID(Pagenam);
@@ -27,6 +29,32 @@ const AccessToken = () => {
   useEffect(() => {
     handlesPages();
   }, []);
+  const onPressTwitter = () => {
+    const provider = new TwitterAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((res: any) => {
+        dispatch(
+          setTwitterDeatail({
+            accessToken: res._tokenResponse.oauthAccessToken,
+            tokenSecret: res._tokenResponse.oauthTokenSecret,
+          })
+        );
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+  const onPressFacebook = () => {
+    const provider = new FacebookAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((response: any) => {
+        dispatch(pageList(response._tokenResponse));
+        handlesPages();
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
 
   return (
     <>
@@ -57,7 +85,10 @@ const AccessToken = () => {
             </Select>
           </FormControl>
           <span className="ButtonFacebookLogin">
-            <ButtonFacebookLogin handleSuccess={handleSuccess} />
+            <button onClick={onPressFacebook}>Log in with Facebook</button>
+          </span>
+          <span className="ButtonFacebookLogin mt-4">
+            <button onClick={onPressTwitter}>Log in with Twitter</button>
           </span>
         </Row>
       </Card>

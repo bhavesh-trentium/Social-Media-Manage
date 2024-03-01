@@ -79,13 +79,16 @@
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   transition: 1s ease;
+  background-color: transparent;
+  border: 1px solid #808080;
 }
 
 .ButtonFacebookLogin button:hover {
   box-shadow: none;
+  border: none;
   color: #ffffff;
   background-color: #039be5;
-  background: linear-gradient(to top right, #0163e0, #18acfe);
+  background: linear-gradient(#0163e0, #18acfe);
 }
 .card-formLogin {
   width: 30rem;

@@ -5,10 +5,11 @@ const {
     postImageGenerate,
     postCaptionsGenerate,
     postImageInstagram,
-    postImageTwitter } = require('./controllers/generatePost');
+    postImageTwitter,
+    syncTwiiterToken } = require('./controllers/generatePost');
 
 let i = 1
-cron.schedule('0 7,11,15,19', async () => {
+cron.schedule('0 7,11,15,19 * * *', async () => {
     console.log('running a task count', i++);
     await mainFunction()
 
@@ -16,6 +17,7 @@ cron.schedule('0 7,11,15,19', async () => {
 
 const mainFunction = async () => {
     try {
+        await syncTwiiterToken()
         const pageData = await getfirebaseDatabase();
         const responseImage = await postImageGenerate(pageData);
         const responseCaption = await postCaptionsGenerate(pageData);

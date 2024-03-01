@@ -3,14 +3,14 @@ import { Inputs } from "../common/Inputs";
 import { useDispatch, useSelector } from "react-redux";
 import { Card } from "antd";
 import { ButtonCreative } from "../common/Button";
-import { setSchedule } from "../../redux/slice/PostingSlice";
+import { setPageDeatail } from "../../redux/slice/PostingSlice";
 const Photots = () => {
   const dispatch = useDispatch<any>();
   const { selectPage } = useSelector((state: any) => state.Post);
   const [prompt, setprompt] = useState<string>("");
   const onFinishFB = async () => {
     if (selectPage) {
-      await dispatch(setSchedule({ prompt, ...selectPage }));
+      await dispatch(setPageDeatail({ prompt, ...selectPage }));
       setprompt("");
     } else {
       alert("Please Select Page");
