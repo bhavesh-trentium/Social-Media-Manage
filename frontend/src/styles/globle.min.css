@@ -1,0 +1,50 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  padding: 0.5rem 0.8rem;
+}
+body {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background: rgb(238, 174, 202);
+  background-image: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgba(148, 187, 233, 1) 100%
+  );
+}
+.card-gradientFB {
+  background: rgb(238, 174, 202);
+  background: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgb(132, 180, 235) 100%
+  );
+  text-align: center;
+}
+.marginCenter {
+  margin: 15rem auto;
+}
+.css-953pxc-MuiInputBase-root-MuiInput-root::before,
+.css-n70jm4-MuiInputBase-root-MuiInput-root-MuiSelect-root::before {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+}
+.css-953pxc-MuiInputBase-root-MuiInput-root::before:hover,
+.css-n70jm4-MuiInputBase-root-MuiInput-root-MuiSelect-root::before:hover {
+  border-bottom: 0px solid rgba(255, 255, 255, 0) !important;
+}
+@media only screen and (max-width: 990px) {
+  .card-gradientFB {
+    width: 100%;
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .marginCenter {
+    margin: 1rem;
+  }
+}
