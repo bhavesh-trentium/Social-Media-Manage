@@ -1,4 +1,4 @@
-Overview
+** Overview **
 This program allows users to authenticate via Facebook and Twitter, create and manage Instagram business pages, link them with Facebook, and post photos and videos with auto-generated captions.
 Features
 Authentication:
