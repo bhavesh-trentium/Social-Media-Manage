@@ -6,19 +6,19 @@ import Home from "./pages/Home";
 import SignIn from "./components/auth/SignIn";
 
 function App() {
-  const navigate = useNavigate();
-  const user = localStorage.getItem("user");
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    } else {
-      navigate("/home");
-    }
-  }, []);
+  // const navigate = useNavigate();
+  // const user = localStorage.getItem("user");
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/");
+  //   } else {
+  //     navigate("/home");
+  //   }
+  // }, []);
   return (
     <Routes>
-      <Route path="*" element={user ? <Home /> : <SignIn />} />
-      <Route path="/home/*" element={<Home />} />
+      {/* <Route path="*" element={user ? <Home /> : <SignIn />} /> */}
+      <Route path="/" element={<Home />} />
     </Routes>
   );
 }

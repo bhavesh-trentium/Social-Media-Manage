@@ -18,7 +18,7 @@ const AccessToken = () => {
   const dispatch = useDispatch<any>();
   const handlesPages = async () => {
     const Pages = localStorage.getItem("pageList");
-    setPage(Pages ? JSON.parse(Pages) : []);
+    setPage((Pages && JSON.parse(Pages)) || []);
   };
 
   const onFinish = (e: any) => {
@@ -44,12 +44,12 @@ const AccessToken = () => {
         console.log("error", error);
       });
   };
-  const onPressFacebook = () => {
+  const onPressFacebook = async () => {
     const provider = new FacebookAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((response: any) => {
-        dispatch(pageList(response._tokenResponse));
-        handlesPages();
+    await signInWithPopup(auth, provider)
+      .then(async (response: any) => {
+        await dispatch(pageList(response._tokenResponse));
+        await handlesPages();
       })
       .catch((error) => {
         console.log("error", error);
