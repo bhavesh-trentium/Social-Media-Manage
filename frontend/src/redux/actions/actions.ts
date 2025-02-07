@@ -16,7 +16,7 @@ export const pageList = createAsyncThunk(
     const PageData = [];
     try {
       const Responese = await axios.get(
-        `${facebook}me/accounts?access_token=${data.oauthAccessToken}`
+        `${facebook}me/accounts?access_token=${data.accessToken}`
       );
       for (const i in Responese.data.data) {
         const Result = await axios.post(

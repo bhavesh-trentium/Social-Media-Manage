@@ -40,21 +40,21 @@ const postCaptionsGenerate = async (data) => {
   const safetySettings = [
     {
       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      threshold: HarmBlockThreshold.BLOCK_HIGH_AND_ABOVE,
     },
     {
       category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      threshold: HarmBlockThreshold.BLOCK_HIGH_AND_ABOVE,
     },
     {
       category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      threshold: HarmBlockThreshold.BLOCK_HIGH_AND_ABOVE,
     },
     {
       category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+      threshold: HarmBlockThreshold.BLOCK_HIGH_AND_ABOVE,
     },
-  ];
+  ];  
 
   const chat = model.startChat({
     generationConfig,
@@ -91,9 +91,9 @@ const postImageFacebook = async (data) => {
   try {
     console.log("enter postImageFacebook");
     const formData = new FormData();
-    formData.append("message", data.caption);
+    formData.append("caption", data.caption);
     formData.append("access_token", data.access_token);
-    formData.append("url", data.img);
+    formData.append("url", 'https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png');
 
     const response = await axios.post(
       `${process.env.FACEBOOK_ENDPOINT}${data.PageID}/photos`,
@@ -121,7 +121,7 @@ const postImageInstagram = async (data) => {
     const responeseCreationID = await axios.post(
       `${process.env.FACEBOOK_ENDPOINT}${instagramBusinessAccountID.data.instagram_business_account.id}/media?`,
       {
-        image_url: data.img,
+        image_url:'https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png',
         caption: data.caption,
         access_token: data.access_token,
       }
@@ -207,6 +207,35 @@ const syncTwiiterToken = async () => {
     );
   });
 };
+// TODO: Test groq ai Models
+const postData = async () => {
+  try {
+    const response = await axios.post(
+      process.env.GROQ_API,
+      {
+        messages: [
+          {
+            role: 'user',
+            content: 'Write a quote about this February month.',
+          },
+        ],
+        model: process.env.GROQ_MODEL_NAME,
+        stop: '```',
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.API_KEY_GROQ}`,
+          'Cookie': '__cf_bm=fmpxVUU7t_f5zlUi6YbEBUDIPqfKxvT5OTibJLuD4cc-1738911544-1.0.1.1-.AFCcTfc7oBVdlDegj5A3zwycctRFKZsZ4p1_Mvm67dWxbOhnwx1XWpaX5JnN20khPQOoTNgW95hn72ql97nnA',
+        },
+      }
+    );
+
+ return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error('Error:', error.response ? error.response.data : error.message);
+  }
+};
 
 module.exports = {
   postImageInstagram,
@@ -216,4 +245,5 @@ module.exports = {
   postImageGenerate,
   postImageTwitter,
   syncTwiiterToken,
+  postData
 };

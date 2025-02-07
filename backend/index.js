@@ -19,7 +19,7 @@ const mainFunction = async () => {
   try {
     await syncTwiiterToken();
     const pageData = await getfirebaseDatabase();
-    const responseImage = await postImageGenerate(pageData);
+    // const responseImage = await postImageGenerate(pageData);
     const responseCaption = await postCaptionsGenerate(pageData);
     const originalCaption = responseCaption.replace(/[^\w\s]/gi, "");
     const data = { ...pageData, caption: originalCaption, img: responseImage };
