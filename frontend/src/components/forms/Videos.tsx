@@ -36,7 +36,7 @@ const Videos = () => {
         hoverable
         title="Post Videos"
         bordered={false}
-        className="card-gradientFB col-4 px-3 pb-4"
+        className="card-gradientFB h-100 w-100"
       >
         <div>
           <UploadButton

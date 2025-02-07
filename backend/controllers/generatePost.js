@@ -94,6 +94,7 @@ const postImageFacebook = async (data) => {
     formData.append("caption", data.caption);
     formData.append("access_token", data.access_token);
     formData.append("url", 'https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png');
+    // formData.append("url", data.img)
 
     const response = await axios.post(
       `${process.env.FACEBOOK_ENDPOINT}${data.PageID}/photos`,
@@ -122,6 +123,7 @@ const postImageInstagram = async (data) => {
       `${process.env.FACEBOOK_ENDPOINT}${instagramBusinessAccountID.data.instagram_business_account.id}/media?`,
       {
         image_url:'https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png',
+        // image_url: data.img
         caption: data.caption,
         access_token: data.access_token,
       }
@@ -142,7 +144,8 @@ const postImageInstagram = async (data) => {
   }
 };
 const postImageTwitter = async (data) => {
-  const uri = data.img;
+  // const uri = data.img;
+  const uri ="https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png"
   const filename = "image.png";
   console.log("enter postImageTwitter");
   downloadImage(uri, filename, async () => {
