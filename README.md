@@ -1,5 +1,5 @@
 #### <a name="_4p288gjr7ytp"></a>**Overview**
-This program allows users to authenticate via Facebook and Twitter, create and manage Facebook business pages, link them with Instagram, and post photos and videos with auto-generated captions. T
+This program allows users to authenticate via Facebook and Twitter, create and manage Facebook business pages, link them with Instagram, and post photos and videos with auto-generated captions.
 #### <a name="_od6eiirjajx8"></a>**Features**
 -  **Authentication:**
    -  Users can log in using Facebook.
