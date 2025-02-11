@@ -10,6 +10,8 @@ const { database } = require("../firebase");
 const fs = require("fs");
 const { twitterClient } = require("../twitterClient");
 const dotenv = require("dotenv");
+const FormData = require('form-data');
+
 
 const getfirebaseDatabase = async () => {
   console.log("enter getfirebaseDatabase");
@@ -89,25 +91,30 @@ const postImageGenerate = async (data) => {
 };
 const postImageFacebook = async (data) => {
   try {
+    if (!data.img) {
+      throw new Error("The path to the image file is undefined.");
+    }
+
     console.log("enter postImageFacebook");
+
     const formData = new FormData();
     formData.append("caption", data.caption);
     formData.append("access_token", data.access_token);
-    formData.append("url", 'https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png');
+    formData.append("source", fs.createReadStream(data.img));
     // formData.append("url", data.img)
-
+    const headers = {
+      ...formData.getHeaders(),
+    };
     const response = await axios.post(
       `${process.env.FACEBOOK_ENDPOINT}${data.PageID}/photos`,
       formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: headers,
       }
     );
     return response.data;
   } catch (error) {
-    console.error("error", error);
+    console.error("error", error.response ? error.response.data : error.message); // More detailed error logging
     throw error;
   }
 };
@@ -144,44 +151,20 @@ const postImageInstagram = async (data) => {
   }
 };
 const postImageTwitter = async (data) => {
-  // const uri = data.img;
-  const uri ="https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png"
-  const filename = "image.png";
   console.log("enter postImageTwitter");
-  downloadImage(uri, filename, async () => {
-    try {
-      const mediaId = await twitterClient.v1.uploadMedia("./image.png");
-      const mediaPublish = await twitterClient.v2.tweet({
-        text: data.caption,
-        media: {
-          media_ids: [mediaId],
-        },
-      });
-      deletePhoto("./image.png");
-      return mediaPublish.data;
-    } catch (error) {
-      console.error("Error uploading media to Twitter:", error);
-      throw error;
-    }
-  });
-};
-const downloadImage = async (imageUrl, localFilePath, callback) => {
-  const response = await axios({
-    url: imageUrl,
-    method: "GET",
-    responseType: "stream",
-  });
-  await response.data
-    .pipe(fs.createWriteStream(localFilePath))
-    .on("close", callback);
-};
-const deletePhoto = (filePath) => {
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.error("Error deleting photo:", err);
-      return;
-    }
-  });
+  try {
+    const mediaId = await twitterClient.v1.uploadMedia(data.img);
+    const mediaPublish = await twitterClient.v2.tweet({
+      text: data.caption,
+      media: {
+        media_ids: [mediaId],
+      },
+    });
+    return mediaPublish.data;
+  } catch (error) {
+    console.error("Error uploading media to Twitter:", error);
+    throw error;
+  }
 };
 const syncTwiiterToken = async () => {
   return new Promise((resolve, reject) => {
@@ -218,25 +201,29 @@ const postData = async () => {
       {
         messages: [
           {
-            role: 'user',
-            content: 'Write a quote about this February month.',
+            role: "user",
+            content: "Write a quote about this February month.",
           },
         ],
         model: process.env.GROQ_MODEL_NAME,
-        stop: '```',
+        stop: "```",
       },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.API_KEY_GROQ}`,
-          'Cookie': '__cf_bm=fmpxVUU7t_f5zlUi6YbEBUDIPqfKxvT5OTibJLuD4cc-1738911544-1.0.1.1-.AFCcTfc7oBVdlDegj5A3zwycctRFKZsZ4p1_Mvm67dWxbOhnwx1XWpaX5JnN20khPQOoTNgW95hn72ql97nnA',
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.API_KEY_GROQ}`,
+          Cookie:
+            "__cf_bm=fmpxVUU7t_f5zlUi6YbEBUDIPqfKxvT5OTibJLuD4cc-1738911544-1.0.1.1-.AFCcTfc7oBVdlDegj5A3zwycctRFKZsZ4p1_Mvm67dWxbOhnwx1XWpaX5JnN20khPQOoTNgW95hn72ql97nnA",
         },
       }
     );
 
- return response.data.choices[0].message.content;
+    return response.data.choices[0].message.content;
   } catch (error) {
-    console.error('Error:', error.response ? error.response.data : error.message);
+    console.error(
+      "Error:",
+      error.response ? error.response.data : error.message
+    );
   }
 };
 
@@ -248,5 +235,5 @@ module.exports = {
   postImageGenerate,
   postImageTwitter,
   syncTwiiterToken,
-  postData
+  postData,
 };
