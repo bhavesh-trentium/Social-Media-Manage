@@ -87,9 +87,9 @@ const AccessToken = () => {
           </Select>
         </FormControl>
         <LoginSocialFacebook
-          appId={process.env.APP_ID as string}
-          fieldsProfile={process.env.FIELDS_PROFILE}
-          scope={process.env.SCOPE_PROFILE}
+          appId={process.env.REACT_APP_APP_ID as string}
+          fieldsProfile={process.env.REACT_APP_FIELDS_PROFILE}
+          scope={process.env.REACT_APP_SCOPE_PROFILE}
           redirect_uri={window.origin}
           onResolve={(data: IResolveParams) => {
             onPressFacebook(data);
