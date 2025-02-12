@@ -7,8 +7,8 @@ const addTextToImage = async (imagePath, text, outputPath) => {
     const canvas = createCanvas(image.width, image.height);
     const ctx = canvas.getContext("2d");
 
-    // Draw the image on the canvas
-    ctx.drawImage(image, 0, 0);
+    // Draw the image on the canvas without resizing
+    ctx.drawImage(image, 0, 0, image.width, image.height);
 
     // Define maximum character limit
     const maxChars = 150; // Change this value if needed
@@ -71,10 +71,12 @@ const addTextToImage = async (imagePath, text, outputPath) => {
     const buffer = canvas.toBuffer("image/png");
     fs.writeFileSync(outputPath, buffer);
 
-    console.log("Image saved with wrapped and resized text overlay.");
+    console.log(
+      "Image saved with wrapped and resized text overlay without resizing or blurring."
+    );
   } catch (err) {
     console.error("Error adding text to image:", err);
   }
 };
 
-module.exports= addTextToImage;
+module.exports = addTextToImage;

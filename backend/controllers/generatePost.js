@@ -10,8 +10,8 @@ const { database } = require("../firebase");
 const fs = require("fs");
 const { twitterClient } = require("../twitterClient");
 const dotenv = require("dotenv");
-const FormData = require('form-data');
-
+const FormData = require("form-data");
+const uploadImageAndGetURL = require("../utils/firebaseUploadImageAndGetURL");
 
 const getfirebaseDatabase = async () => {
   console.log("enter getfirebaseDatabase");
@@ -56,7 +56,7 @@ const postCaptionsGenerate = async (data) => {
       category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
       threshold: HarmBlockThreshold.BLOCK_HIGH_AND_ABOVE,
     },
-  ];  
+  ];
 
   const chat = model.startChat({
     generationConfig,
@@ -69,6 +69,7 @@ const postCaptionsGenerate = async (data) => {
   const response = result.response;
   return response.text();
 };
+// TODO: ImageGenerate is not working this moment
 const postImageGenerate = async (data) => {
   console.log("enter postImageGenerate");
 
@@ -89,6 +90,7 @@ const postImageGenerate = async (data) => {
   });
   return output[0];
 };
+
 const postImageFacebook = async (data) => {
   try {
     if (!data.img) {
@@ -114,14 +116,17 @@ const postImageFacebook = async (data) => {
     );
     return response.data;
   } catch (error) {
-    console.error("error", error.response ? error.response.data : error.message); // More detailed error logging
+    console.error(
+      "error",
+      error.response ? error.response.data : error.message
+    ); // More detailed error logging
     throw error;
   }
 };
 const postImageInstagram = async (data) => {
   try {
     console.log("enter postImageInstagram");
-
+    const image_url = await uploadImageAndGetURL(data.img);
     const instagramBusinessAccountID = await axios.get(
       `${process.env.FACEBOOK_ENDPOINT}${data.PageID}?fields=instagram_business_account&access_token=${data.access_token}`
     );
@@ -129,7 +134,7 @@ const postImageInstagram = async (data) => {
     const responeseCreationID = await axios.post(
       `${process.env.FACEBOOK_ENDPOINT}${instagramBusinessAccountID.data.instagram_business_account.id}/media?`,
       {
-        image_url:'https://miro.medium.com/v2/resize:fit:1400/1*kxBdslclglg4zgCw0NMIIA.png',
+        image_url,
         // image_url: data.img
         caption: data.caption,
         access_token: data.access_token,
@@ -166,6 +171,7 @@ const postImageTwitter = async (data) => {
     throw error;
   }
 };
+
 const syncTwiiterToken = async () => {
   return new Promise((resolve, reject) => {
     const envConfig = dotenv.parse(fs.readFileSync(".env"));
@@ -193,6 +199,7 @@ const syncTwiiterToken = async () => {
     );
   });
 };
+
 // TODO: Test groq ai Models
 const postData = async () => {
   try {

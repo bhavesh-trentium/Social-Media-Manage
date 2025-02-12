@@ -25,24 +25,22 @@ const TopNavbar = (props: any) => {
         <Link className="text-decoration-none" to="/">
           <Navbar.Brand>Home</Navbar.Brand>
         </Link>
-        <Navbar.Toggle
-          aria-controls="basic-navbar-nav"
-          className="toggle-button"
-        />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto ">
-            {props.Navs.map((i: any, indx: number) => (
-              <Link
-                key={`${i.id}`}
-                className="text-decoration-none text-dark mx-2"
-                to={i.nav}
-              >
-                {i.titls}
-              </Link>
-            ))}
-          </Nav>
-          <LogOutButton onClick={logout}>Log-Out</LogOutButton>
-        </Navbar.Collapse>
+        {props.Navs && (
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto ">
+              {props.Navs.map((i: any, indx: number) => (
+                <Link
+                  key={`${i.id}`}
+                  className="text-decoration-none text-dark mx-2"
+                  to={i.nav}
+                >
+                  {i.titls}
+                </Link>
+              ))}
+            </Nav>
+          </Navbar.Collapse>
+        )}
+        {/* <LogOutButton onClick={logout}>Log-Out</LogOutButton> */}
       </Container>
     </Navbar>
   );

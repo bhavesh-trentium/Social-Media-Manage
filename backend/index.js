@@ -2,7 +2,6 @@ var cron = require("node-cron");
 const {
   postImageFacebook,
   getfirebaseDatabase,
-  postImageGenerate,
   postCaptionsGenerate,
   postImageInstagram,
   postImageTwitter,
@@ -26,7 +25,7 @@ const images = [
 ];
 const outputPath = path.resolve(__dirname, "./images/output.png");
 let i = 1;
-cron.schedule("0 7,11,15,19 * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("running a task count", i++);
   await mainFunction();
 });
@@ -35,18 +34,19 @@ const mainFunction = async () => {
   try {
     await syncTwiiterToken();
     const pageData = await getfirebaseDatabase();
-    // // const responseImage = await postImageGenerate(pageData);
     const responseCaption = await postCaptionsGenerate(pageData);
     const originalCaption = responseCaption.replace(/[^\w\s]/gi, "");
     const randomImage = images[Math.floor(Math.random() * images.length)];
-    const imagePath = path.resolve(__dirname, "images/templateImg", randomImage);
+    const imagePath = path.resolve(
+      __dirname,
+      "images/templateImg",
+      randomImage
+    );
     await addTextToImage(imagePath, originalCaption, outputPath);
-    
     const data = { ...pageData, caption: originalCaption, img: outputPath };
-    // const data = { ...pageData, caption: originalCaption };
-    await postImageTwitter(data);
+    // await postImageTwitter(data);
     await postImageFacebook(data);
-    // await postImageInstagram(data);
+    await postImageInstagram(data);
     console.log("Done ✅");
   } catch (error) {
     console.log(error);
