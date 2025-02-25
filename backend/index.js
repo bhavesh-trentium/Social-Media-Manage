@@ -44,14 +44,14 @@ const mainFunction = async () => {
     );
     await addTextToImage(imagePath, originalCaption, outputPath);
     const data = { ...pageData, caption: originalCaption, img: outputPath };
-    // await postImageTwitter(data);
     await postImageFacebook(data);
     await postImageInstagram(data);
+    await postImageTwitter(data);
     console.log("Done ✅");
   } catch (error) {
     console.log(error);
   }
 };
 //    0 7,11,15,19 * * *    => 7am, 11pm, 3pm, 7pm
-//   */5 * * * * *  => 5 sec
 //   * * * * *  => every minutes
+//   */5 * * * * *  => 5 sec

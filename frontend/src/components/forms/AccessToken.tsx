@@ -62,7 +62,7 @@ const AccessToken = () => {
   return (
     <Card
       hoverable
-      title="Access Token Genrate"
+      title="Access Token Generate"
       bordered={false}
       className="card-gradientFB h-100 w-100"
     >
