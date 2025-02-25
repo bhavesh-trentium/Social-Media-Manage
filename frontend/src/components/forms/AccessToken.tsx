@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { Card } from "antd";
-import { pageList } from "../../redux/actions/actions";
+import { fetchPostCategory, pageList } from "../../redux/actions/actions";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { pageSave, setTwitterDeatail } from "../../redux/slice/PostingSlice";
 import { TwitterAuthProvider, signInWithPopup } from "firebase/auth";
@@ -34,6 +34,7 @@ const AccessToken = () => {
   };
   useEffect(() => {
     handlesPages();
+    dispatch(fetchPostCategory());
   }, []);
   const onPressTwitter = () => {
     const provider = new TwitterAuthProvider();

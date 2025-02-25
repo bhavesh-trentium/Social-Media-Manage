@@ -12,7 +12,7 @@ const { twitterClient } = require("../twitterClient");
 const dotenv = require("dotenv");
 const FormData = require("form-data");
 const uploadImageAndGetURL = require("../utils/firebaseUploadImageAndGetURL");
-
+const path = require("path");
 const getfirebaseDatabase = async () => {
   console.log("enter getfirebaseDatabase");
   return new Promise((resolve, reject) => {
@@ -90,7 +90,6 @@ const postImageGenerate = async (data) => {
   });
   return output[0];
 };
-
 const postImageFacebook = async (data) => {
   try {
     if (!data.img) {
@@ -171,7 +170,6 @@ const postImageTwitter = async (data) => {
     throw error;
   }
 };
-
 const syncTwiiterToken = async () => {
   return new Promise((resolve, reject) => {
     const envConfig = dotenv.parse(fs.readFileSync(".env"));
@@ -198,6 +196,49 @@ const syncTwiiterToken = async () => {
       }
     );
   });
+};
+const fetchRandomImage = async (data) => {
+  try {
+    // Fetch image from Unsplash API
+    const response = await axios.get(
+      `${process.env.API_UNPLASH_ENDPOINT}?query=${data.category}`,
+      {
+        headers: {
+          Authorization: `Client-ID ${process.env.UNPLASH_CLIENT_ID}`,
+        },
+      }
+    );
+
+    // Extract the image URL
+    const imageUrl = response.data.urls.regular;
+
+    // ✅ Define correct path for `images/` directory (outside `controllers/`)
+    const imagesDir = path.resolve(__dirname, "../images"); // Move up one level
+    const outputPath = path.join(imagesDir, "random.png");
+
+    // ✅ Ensure the directory exists
+    if (!fs.existsSync(imagesDir)) {
+      fs.mkdirSync(imagesDir, { recursive: true });
+    }
+
+    // Fetch the image stream
+    const writer = fs.createWriteStream(outputPath);
+    const imageStream = await axios.get(imageUrl, { responseType: "stream" });
+
+    // Pipe the stream to the file
+    imageStream.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching random image:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
 };
 
 // TODO: Test groq ai Models
@@ -243,4 +284,5 @@ module.exports = {
   postImageTwitter,
   syncTwiiterToken,
   postData,
+  fetchRandomImage,
 };

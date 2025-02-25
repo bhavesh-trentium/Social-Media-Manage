@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   FacebookVideosPost,
+  fetchPostCategory,
   InstaPostVideo,
   pageList,
 } from "../actions/actions";
@@ -22,6 +23,7 @@ export interface PostState {
   user?: userItem;
   pageData?: pageItem[];
   selectPage?: pageItem;
+  postCategory?: string[];
   loading: boolean;
   error: any;
 }
@@ -30,6 +32,7 @@ const initialState: PostState = {
   user: undefined,
   pageData: undefined,
   selectPage: undefined,
+  postCategory: undefined,
   loading: false,
   error: null,
 };
@@ -92,6 +95,18 @@ const PostingSlice: any = createSlice({
         state.loading = false;
       })
       .addCase(pageList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchPostCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPostCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.postCategory = action.payload;
+      })
+      .addCase(fetchPostCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

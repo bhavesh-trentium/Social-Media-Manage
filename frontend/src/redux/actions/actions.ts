@@ -2,8 +2,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { facebook, googlemodel } from "../../services/api";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../firebase/Firebase";
+import { database, storage } from "../../firebase/Firebase";
 import { pageItem } from "../../redux/slice/PostingSlice";
+import { get, ref as refDatabase } from "firebase/database";
 
 export interface postDataParams extends pageItem {
   file: any;
@@ -139,3 +140,21 @@ export const postCaptionsGenerate = async (data: { caption: string }) => {
     throw error;
   }
 };
+
+export const fetchPostCategory = createAsyncThunk(
+  "posts/fetchPostCategory",
+  async (_, thunkAPI) => {
+    try {
+      const snapshot = await get(refDatabase(database, "postCategory"));
+      if (snapshot.exists()) {
+        return JSON.parse(snapshot.val()); // Return data to be used in extraReducers
+      } else {
+        console.log("No data available");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error getting document:", error);
+      return thunkAPI.rejectWithValue(error?.message);
+    }
+  }
+);

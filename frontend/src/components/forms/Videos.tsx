@@ -47,7 +47,7 @@ const Videos = () => {
           <span className="fileName">{file.name}</span>
           <Inputs
             class="col-12"
-            holder="Caption Videos"
+            holder="Prompt Caption of Videos"
             value={caption || ""}
             change={(e: any) => setCaption(e.target.value)}
             nam="caption"
