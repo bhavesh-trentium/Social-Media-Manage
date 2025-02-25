@@ -46,7 +46,7 @@ const mainFunction = async () => {
     const data = { ...pageData, caption: originalCaption, img: outputPath };
     await postImageFacebook(data);
     await postImageInstagram(data);
-    await postImageTwitter(data);
+    // await postImageTwitter(data);
     console.log("Done ✅");
   } catch (error) {
     console.log(error);
