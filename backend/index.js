@@ -25,7 +25,7 @@ const images = [
 ];
 const outputPath = path.resolve(__dirname, "./images/output.png");
 let i = 1;
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 7,11,15,19 * * *", async () => {
   console.log("running a task count", i++);
   await mainFunction();
 });

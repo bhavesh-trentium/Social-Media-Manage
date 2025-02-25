@@ -1,14 +1,21 @@
 const fs = require("fs");
 const { createCanvas, loadImage } = require("@napi-rs/canvas");
 
+// Ensure the font is installed on the system
+const fontFamily = "Great Vibes"; // Must be installed on the system
+
 const addTextToImage = async (imagePath, text, outputPath) => {
   try {
     const image = await loadImage(imagePath);
     const canvas = createCanvas(image.width, image.height);
     const ctx = canvas.getContext("2d");
 
-    // Draw the original image without any quality loss
+    // Draw the original image without quality loss
     ctx.drawImage(image, 0, 0, image.width, image.height);
+
+    // Apply a semi-transparent black overlay over the entire image
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // 50% transparency
+    ctx.fillRect(0, 0, image.width, image.height);
 
     // Define max character limit
     const maxChars = 150;
@@ -17,11 +24,11 @@ const addTextToImage = async (imagePath, text, outputPath) => {
     }
 
     // Set text properties
-    let fontSize = 50;
+    let fontSize = 70;
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = `bold ${fontSize}px 'Poppins', sans-serif`;
+    ctx.font = `${fontSize}px "${fontFamily}"`;
 
     // Define max width and height constraints for text
     const maxWidth = image.width * 0.8;
@@ -52,7 +59,7 @@ const addTextToImage = async (imagePath, text, outputPath) => {
     // Adjust font size dynamically
     let lines;
     while (true) {
-      ctx.font = `bold ${fontSize}px 'Poppins', sans-serif`;
+      ctx.font = `${fontSize}px "${fontFamily}"`;
 
       lineHeight = fontSize * 1.2;
       lines = wrapText(ctx, text, maxWidth);
@@ -63,23 +70,8 @@ const addTextToImage = async (imagePath, text, outputPath) => {
       fontSize -= 2;
     }
 
-    // Calculate background blur area dimensions
-    const textHeight = lines.length * lineHeight;
-    const padding = 20;
-    const rectWidth = maxWidth + padding * 2;
-    const rectHeight = textHeight + padding * 2;
-    const rectX = (image.width - rectWidth) / 2;
-    const rectY = image.height * 0.7  ; // Adjust to top
-
-    // Apply blur effect to background area
-    ctx.save();
-    ctx.filter = "blur(10px)"; // Apply blur
-    ctx.fillStyle = "rgba(0, 0, 0, 0.6)"; // Semi-transparent black background
-    ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
-    ctx.restore(); // Remove blur effect for text
-
     // Draw the wrapped text on the blurred background
-    const startY = rectY + padding + fontSize / 2;
+    const startY = image.height * 0.5; // Adjust text position
     lines.forEach((line, index) => {
       ctx.fillText(line, image.width / 2, startY + index * lineHeight);
     });
