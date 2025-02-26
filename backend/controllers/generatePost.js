@@ -92,68 +92,104 @@ const postImageGenerate = async (data) => {
 };
 const postImageFacebook = async (data) => {
   try {
-    if (!data.img) {
-      throw new Error("The path to the image file is undefined.");
+    console.log("enter postImageFacebook");
+    if (!data.img || !fs.existsSync(data.img)) {
+      throw new Error(`The image file does not exist: ${data.img}`);
     }
 
-    console.log("enter postImageFacebook");
+    // 🔹 Helper function to upload a photo
+    const uploadPhoto = async (published) => {
+      const formData = new FormData();
+      formData.append("caption", data.caption);
+      formData.append("access_token", data.access_token);
+      formData.append("published", published);
+      formData.append("source", fs.createReadStream(data.img));
 
-    const formData = new FormData();
-    formData.append("caption", data.caption);
-    formData.append("access_token", data.access_token);
-    formData.append("source", fs.createReadStream(data.img));
-    // formData.append("url", data.img)
-    const headers = {
-      ...formData.getHeaders(),
+      const { data: response } = await axios.post(
+        `${process.env.FACEBOOK_ENDPOINT}${data.PageID}/photos`,
+        formData,
+        { headers: formData.getHeaders() }
+      );
+
+      if (!response.id) throw new Error("Error: No photo ID returned from Facebook.");
+      return response.id;
     };
-    const response = await axios.post(
-      `${process.env.FACEBOOK_ENDPOINT}${data.PageID}/photos`,
-      formData,
-      {
-        headers: headers,
-      }
+
+    // 🔹 Upload photo as a published post
+    const postId = await uploadPhoto("true");
+
+    // 🔹 Upload photo as an unpublished story
+    const storyPhotoId = await uploadPhoto("false");
+
+    // 🔹 Convert the unpublished photo into a story post
+    const storyFormData = new FormData();
+    storyFormData.append("photo_id", storyPhotoId);
+    storyFormData.append("access_token", data.access_token);
+
+    const { data: storyResponse } = await axios.post(
+      `${process.env.FACEBOOK_ENDPOINT}${data.PageID}/photo_stories`,
+      storyFormData,
+      { headers: storyFormData.getHeaders() }
     );
-    return response.data;
+
+    return { postId, story: storyResponse };
   } catch (error) {
-    console.error(
-      "error",
-      error.response ? error.response.data : error.message
-    ); // More detailed error logging
+    console.error("Error:", error.response?.data || error.message);
     throw error;
   }
 };
+
 const postImageInstagram = async (data) => {
   try {
     console.log("enter postImageInstagram");
+
+    // ✅ Upload Image & Get URL
     const image_url = await uploadImageAndGetURL(data.img);
-    const instagramBusinessAccountID = await axios.get(
+
+    // ✅ Get Instagram Business Account ID
+    const { data: igAccountData } = await axios.get(
       `${process.env.FACEBOOK_ENDPOINT}${data.PageID}?fields=instagram_business_account&access_token=${data.access_token}`
     );
 
-    const responeseCreationID = await axios.post(
-      `${process.env.FACEBOOK_ENDPOINT}${instagramBusinessAccountID.data.instagram_business_account.id}/media?`,
-      {
-        image_url,
-        // image_url: data.img
-        caption: data.caption,
-        access_token: data.access_token,
-      }
-    );
+    const instagramBusinessAccountID =
+      igAccountData.instagram_business_account?.id;
+    if (!instagramBusinessAccountID)
+      throw new Error("No Instagram Business Account linked to this page.");
 
-    const Result = await axios.post(
-      `${process.env.FACEBOOK_ENDPOINT}${instagramBusinessAccountID.data.instagram_business_account.id}/media_publish?`,
-      {
-        creation_id: responeseCreationID.data.id,
-        access_token: data.access_token,
-      }
-    );
+    // ✅ Function to Create & Publish Media (Story or Feed)
+    const publishMedia = async (mediaType) => {
+      const { data: mediaCreation } = await axios.post(
+        `${process.env.FACEBOOK_ENDPOINT}${instagramBusinessAccountID}/media`,
+        {
+          image_url,
+          caption: data.caption,
+          access_token: data.access_token,
+          ...(mediaType === "STORIES" && { media_type: "STORIES" }),
+        }
+      );
 
-    return Result.data;
+      const { data: mediaPublish } = await axios.post(
+        `${process.env.FACEBOOK_ENDPOINT}${instagramBusinessAccountID}/media_publish`,
+        {
+          creation_id: mediaCreation.id,
+          access_token: data.access_token,
+        }
+      );
+
+      return mediaPublish;
+    };
+
+    // ✅ Post as both Story and Feed
+    const story = await publishMedia("STORIES");
+    const post = await publishMedia("FEED");
+
+    return { story, post };
   } catch (error) {
-    console.error("error", error);
+    console.error("error", error.response?.data || error.message);
     throw error;
   }
 };
+
 const postImageTwitter = async (data) => {
   console.log("enter postImageTwitter");
   try {

@@ -24,7 +24,7 @@ const addTextToImage = require("./utils/addTextToImage");
 //   "img-9.png",
 //   "img-10.png",
 // ];
-// const outputPath = path.resolve(__dirname, "./images/output.png");
+const outputPath = path.resolve(__dirname, "./images/output.png");
 let i = 1;
 cron.schedule("0 7,11,15,19 * * *", async () => {
   console.log("running a task count", i++);
@@ -44,10 +44,7 @@ const mainFunction = async () => {
     //   "images/templateImg",
     //   randomImage
     // );
-    const imagePath = path.resolve(
-      __dirname,
-      "./images/random.png"
-    );
+    const imagePath = path.resolve(__dirname, "./images/random.png");
     await addTextToImage(imagePath, originalCaption, outputPath);
     const data = { ...pageData, caption: originalCaption, img: outputPath };
     await postImageFacebook(data);
