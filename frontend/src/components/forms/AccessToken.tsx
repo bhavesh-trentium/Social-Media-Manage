@@ -35,7 +35,7 @@ const AccessToken = () => {
   useEffect(() => {
     handlesPages();
     dispatch(fetchPostCategory());
-  }, []);
+  }, [dispatch]);
   const onPressTwitter = () => {
     const provider = new TwitterAuthProvider();
     signInWithPopup(auth, provider)

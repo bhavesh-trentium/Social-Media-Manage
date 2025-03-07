@@ -34,8 +34,8 @@ export const pageList = createAsyncThunk(
         );
         PageData.push({
           ...Result.data,
-          ["PageName"]: Responese.data.data[i].name,
-          ["PageID"]: Responese.data.data[i].id,
+          PageName: Responese.data.data[i].name,
+          PageID: Responese.data.data[i].id,
         });
       }
       return PageData;
@@ -154,7 +154,7 @@ export const fetchPostCategory = createAsyncThunk(
       }
     } catch (error) {
       console.error("Error getting document:", error);
-      return thunkAPI.rejectWithValue(error?.message);
+      return thunkAPI.rejectWithValue((error as Error).message);
     }
   }
 );

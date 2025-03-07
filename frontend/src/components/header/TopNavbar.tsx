@@ -1,14 +1,14 @@
 import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import { LogOutButton } from "../common/Button";
+import { Link } from "react-router-dom";
+// import { LogOutButton } from "../common/Button";
 
 const TopNavbar = (props: any) => {
-  const navigate = useNavigate();
-  const logout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
-  };
+  // const navigate = useNavigate();
+  // const logout = () => {
+  //   localStorage.removeItem("user");
+  //   navigate("/");
+  // };
   return (
     <Navbar
       sticky="top"

@@ -1,10 +1,9 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import AccessToken from "../components/forms/AccessToken";
 import Photots from "../components/forms/Photots";
 import Videos from "../components/forms/Videos";
 import TopNavbar from "../components/header/TopNavbar";
-import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   return (

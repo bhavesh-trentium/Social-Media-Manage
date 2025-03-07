@@ -56,12 +56,6 @@ const mainFunction = async () => {
     const responseCaption = await postCaptionsGenerate(pageData?.prompt);
     await fetchRandomImage(pageData?.category);
     const originalCaption = responseCaption.replace(/[^\w\s]/gi, "");
-    // const randomImage = images[Math.floor(Math.random() * images.length)];
-    // const imagePath = path.resolve(
-    //   __dirname,
-    //   "images/templateImg",
-    //   randomImage
-    // );
     const imagePath = path.resolve(__dirname, "./images/random.png");
     await addTextToImage(imagePath, originalCaption, outputPath);
     const data = { ...pageData, caption: originalCaption, img: outputPath };

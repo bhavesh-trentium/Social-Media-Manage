@@ -236,78 +236,42 @@ const syncTwiiterToken = async () => {
 const fetchRandomImage = async (category) => {
   try {
     // Fetch image from Unsplash API
+    const seed = Math.floor(Math.random() * 1000000); // Generate a random seed
     const response = await axios.get(
-      `${process.env.API_UNPLASH_ENDPOINT}?query=${category}&collections=holiday-festival`,
-      {
-        headers: {
-          Authorization: `Client-ID ${process.env.UNPLASH_CLIENT_ID}`,
-        },
-      }
+      `${process.env.API_STABLEDIFFFUSION_ENDPOINT}${category}?width=1024&height=1024&seed=${seed}`
     );
+    if (response.status === 200) {
 
-    // Extract the image URL
-    const imageUrl = response.data.urls.regular;
+      // Extract the image URL
+      const imageUrl = response.config.url;
 
-    // ✅ Define correct path for `images/` directory (outside `controllers/`)
-    const imagesDir = path.resolve(__dirname, "../images"); // Move up one level
-    const outputPath = path.join(imagesDir, "random.png");
+      // ✅ Define correct path for `images/` directory (outside `controllers/`)
+      const imagesDir = path.resolve(__dirname, "../images"); // Move up one level
+      const outputPath = path.join(imagesDir, "random.png");
 
-    // ✅ Ensure the directory exists
-    if (!fs.existsSync(imagesDir)) {
-      fs.mkdirSync(imagesDir, { recursive: true });
+      // ✅ Ensure the directory exists
+      if (!fs.existsSync(imagesDir)) {
+        fs.mkdirSync(imagesDir, { recursive: true });
+      }
+
+      // Fetch the image stream
+      const writer = fs.createWriteStream(outputPath);
+      const imageStream = await axios.get(imageUrl, { responseType: "stream" });
+
+      // Pipe the stream to the file
+      imageStream.data.pipe(writer);
+      console.log('done')
+      return new Promise((resolve, reject) => {
+        writer.on("finish", resolve);
+        writer.on("error", reject);
+      });
     }
-
-    // Fetch the image stream
-    const writer = fs.createWriteStream(outputPath);
-    const imageStream = await axios.get(imageUrl, { responseType: "stream" });
-
-    // Pipe the stream to the file
-    imageStream.data.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-      writer.on("finish", resolve);
-      writer.on("error", reject);
-    });
   } catch (error) {
     console.error(
       "Error fetching random image:",
       error.response ? error.response.data : error.message
     );
     throw error;
-  }
-};
-
-// TODO: Test groq ai Models
-const postData = async () => {
-  try {
-    const response = await axios.post(
-      process.env.GROQ_API,
-      {
-        messages: [
-          {
-            role: "user",
-            content: "Write a quote about this February month.",
-          },
-        ],
-        model: process.env.GROQ_MODEL_NAME,
-        stop: "```",
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.API_KEY_GROQ}`,
-          Cookie:
-            "__cf_bm=fmpxVUU7t_f5zlUi6YbEBUDIPqfKxvT5OTibJLuD4cc-1738911544-1.0.1.1-.AFCcTfc7oBVdlDegj5A3zwycctRFKZsZ4p1_Mvm67dWxbOhnwx1XWpaX5JnN20khPQOoTNgW95hn72ql97nnA",
-        },
-      }
-    );
-
-    return response.data.choices[0].message.content;
-  } catch (error) {
-    console.error(
-      "Error:",
-      error.response ? error.response.data : error.message
-    );
   }
 };
 
