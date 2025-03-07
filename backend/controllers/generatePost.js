@@ -16,7 +16,7 @@ const path = require("path");
 const getfirebaseDatabase = async () => {
   console.log("enter getfirebaseDatabase");
   return new Promise((resolve, reject) => {
-    const ref = database.ref("/facebook/pageDeatail");
+    const ref = database.ref("/");
     ref.once(
       "value",
       (snapshot) => {
@@ -28,7 +28,7 @@ const getfirebaseDatabase = async () => {
     );
   });
 };
-const postCaptionsGenerate = async (data) => {
+const postCaptionsGenerate = async (prompt) => {
   console.log("enter postCaptionsGenerate");
   const genAI = new GoogleGenerativeAI(process.env.API_KEY_GEMINI);
   const model = genAI.getGenerativeModel({ model: process.env.MODEL_NAME });
@@ -64,7 +64,7 @@ const postCaptionsGenerate = async (data) => {
     history: [],
   });
   const result = await chat.sendMessage(
-    `${data.prompt} ${process.env.TEXT_PROMPT}`
+    `${prompt} ${process.env.TEXT_PROMPT}`
   );
   const response = result.response;
   return response.text();
@@ -233,11 +233,11 @@ const syncTwiiterToken = async () => {
     );
   });
 };
-const fetchRandomImage = async (data) => {
+const fetchRandomImage = async (category) => {
   try {
     // Fetch image from Unsplash API
     const response = await axios.get(
-      `${process.env.API_UNPLASH_ENDPOINT}?query=${data.category}`,
+      `${process.env.API_UNPLASH_ENDPOINT}?query=${category}&collections=holiday-festival`,
       {
         headers: {
           Authorization: `Client-ID ${process.env.UNPLASH_CLIENT_ID}`,
@@ -311,6 +311,10 @@ const postData = async () => {
   }
 };
 
+const getFestivalCollection = (festivals) => {
+  const currentDate = new Date().toISOString().split('T')[0];
+  return festivals.find(festival => festival.festivalid === currentDate) || null;
+};
 module.exports = {
   postImageInstagram,
   postCaptionsGenerate,
@@ -321,4 +325,5 @@ module.exports = {
   syncTwiiterToken,
   postData,
   fetchRandomImage,
+  getFestivalCollection
 };
