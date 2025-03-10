@@ -69,27 +69,7 @@ const postCaptionsGenerate = async (prompt) => {
   const response = result.response;
   return response.text();
 };
-// TODO: ImageGenerate is not working this moment
-const postImageGenerate = async (data) => {
-  console.log("enter postImageGenerate");
 
-  const replicate = new Replicate({
-    auth: process.env.REPLICATE_API_TOKEN,
-  });
-  const output = await replicate.run(process.env.REPLICATE_MODEL_NAME, {
-    input: {
-      width: 1024,
-      height: 1024,
-      prompt: data.prompt,
-      scheduler: "K_EULER",
-      num_outputs: 1,
-      guidance_scale: 0,
-      negative_prompt: "worst quality, low quality",
-      num_inference_steps: 4,
-    },
-  });
-  return output[0];
-};
 const postImageFacebook = async (data) => {
   try {
     console.log("enter postImageFacebook");
@@ -260,7 +240,7 @@ const fetchRandomImage = async (category) => {
 
       // Pipe the stream to the file
       imageStream.data.pipe(writer);
-      console.log('done')
+      console.log('done',imageUrl)
       return new Promise((resolve, reject) => {
         writer.on("finish", resolve);
         writer.on("error", reject);
@@ -284,10 +264,8 @@ module.exports = {
   postCaptionsGenerate,
   getfirebaseDatabase,
   postImageFacebook,
-  postImageGenerate,
   postImageTwitter,
   syncTwiiterToken,
-  postData,
   fetchRandomImage,
   getFestivalCollection
 };

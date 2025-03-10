@@ -10,12 +10,16 @@ import { Row } from "react-bootstrap";
 const Photots = () => {
   const dispatch = useDispatch<any>();
   const { selectPage, postCategory } = useSelector((state: any) => state.Post);
-  const [prompt, setprompt] = useState<string>("");
+  const [promptcaption, setPromptcaption] = useState<string>("");
+  const [promptimage, setPromptimage] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const onFinishFB = async () => {
     if (selectPage) {
-      await dispatch(setPageDeatail({ prompt, ...selectPage, category }));
-      setprompt("");
+      await dispatch(
+        setPageDeatail({ promptcaption, promptimage, ...selectPage, category })
+      );
+      setPromptcaption("");
+      setPromptimage("");
     } else {
       alert("Please Select Page");
     }
@@ -31,13 +35,21 @@ const Photots = () => {
         <Row>
           <Inputs
             class="col-12"
-            holder="Prompt Your Post"
-            value={prompt || ""}
-            change={(e: any) => setprompt(e.target.value)}
-            nam="prompt"
+            holder="Prompt Your for caption"
+            value={promptcaption || ""}
+            change={(e: any) => setPromptcaption(e.target.value)}
+            nam="promptcaption"
             typs="text"
           />
-          <FormControl variant="standard" className="mb-1 mt-3">
+          <Inputs
+            class="col-12"
+            holder="Prompt Your for Image"
+            value={promptimage || ""}
+            change={(e: any) => setPromptimage(e.target.value)}
+            nam="promptimage"
+            typs="text"
+          />
+          {/* <FormControl variant="standard" className="mb-1 mt-3">
             <InputLabel id="demo-simple-select-standard-label" className="px-2">Post Category</InputLabel>
             <Select
               labelId="demo-simple-select-standard-label"
@@ -53,7 +65,7 @@ const Photots = () => {
                 <MenuItem value={i}>{i}</MenuItem>,
               ])}
             </Select>
-          </FormControl>
+          </FormControl> */}
           <div className="d-block w-100">
             <ButtonCreative onClick={onFinishFB} type="button">
               Start Scheduler

@@ -13,7 +13,7 @@ const {
 } = require("./controllers/generatePost");
 const addTextToImage = require("./utils/addTextToImage");
 
-const outputPath = path.resolve(__dirname, "./images/output.png");
+const outputPath = path.resolve(__dirname, "./images/random.png");
 let i = 1;
 let pageData = {}; // Store page data globally
 
@@ -35,7 +35,7 @@ cron.schedule("0 * * * *", async () => {
 initializePageData();
 
 // Regular scheduled posts
-cron.schedule("0 7,11,15,19 * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("Running a task count", i++);
   await mainFunction();
 });
@@ -53,12 +53,17 @@ cron.schedule("0 0 * * *", async () => {
 const mainFunction = async () => {
   try {
     await syncTwiiterToken();
-    const responseCaption = await postCaptionsGenerate(pageData?.prompt);
-    await fetchRandomImage(pageData?.category);
+    const responseCaption = await postCaptionsGenerate(pageData?.facebook?.pageDeatail?.promptcaption);
+    const categoryQuery = pageData?.facebook?.pageDeatail?.category ? ` category:${pageData?.facebook?.pageDeatail?.category}` : "";
+    await fetchRandomImage(`${pageData?.facebook?.pageDeatail?.promptimage}${categoryQuery}`);
     const originalCaption = responseCaption.replace(/[^\w\s]/gi, "");
-    const imagePath = path.resolve(__dirname, "./images/random.png");
-    await addTextToImage(imagePath, originalCaption, outputPath);
-    const data = { ...pageData, caption: originalCaption, img: outputPath };
+    // const imagePath = path.resolve(__dirname, "./images/random.png");
+    // await addTextToImage(imagePath, originalCaption, outputPath);
+    const data = {
+      ...pageData?.facebook?.pageDeatail,
+      caption: originalCaption,
+      img: outputPath,
+    };
     await postImageFacebook(data);
     await postImageInstagram(data);
     await postImageTwitter(data);
